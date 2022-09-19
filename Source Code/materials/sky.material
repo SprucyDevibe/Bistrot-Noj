@@ -1,0 +1,16 @@
+{
+
+  "cubemap": {
+    "states" : [ "Blending" ],
+  
+    "vertexShader": "shaders/cubemap.vertex",
+    "vrGeometryShader": "shaders/uv.geometry",
+    "fragmentShader": "shaders/cubemap.fragment"
+  },
+
+  "skyplane": {
+    "vertexShader" : "shaders/sky.vertex",
+    "vrGeometryShader" : "shaders/sky.geometry",
+    "fragmentShader" : "shaders/color.fragment"
+  }
+}

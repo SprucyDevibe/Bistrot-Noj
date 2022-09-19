@@ -1,0 +1,32 @@
+// __multiversion__
+// This signals the loading code to prepend either #version 100 or #version 300 es as apropriate.
+
+#include "fragmentVersionSimple.h"
+#include "uniformPerFrameConstants.h"
+
+#include "Lib/fragmentShaderVariablesContributor.glsl"
+#include "Lib/fragmentShaderFunctionsContributor.glsl"
+
+LAYOUT_BINDING(0) uniform sampler2D TEXTURE_0;
+LAYOUT_BINDING(1) uniform sampler2D TEXTURE_1;
+
+varying highp vec3 CubemapPosition;
+varying vec2 textureCoordinate;
+
+void main(){
+highp vec3 CubemapViewDirection = normalize(CubemapPosition * vec3(1.00, -1.00, 1.00));
+
+vec4 CloudColor = texture2D(TEXTURE_0, textureCoordinate);
+
+vec4 col = vec4(0.00, 0.00, 0.00, 1.00);
+
+highp float NdotL = max(dot(CubemapViewDirection, SunDirection), 0.00);
+highp float NdotU = max(dot(CubemapViewDirection, UpDirection), 0.00);
+highp float LdotU = max(dot(SunDirection, UpDirection), 0.00);
+
+col.rgb = DrawSky(NdotL, NdotU, LdotU);
+col.rgb = ColorProcessing(col.rgb);
+
+gl_FragColor = col;
+
+}

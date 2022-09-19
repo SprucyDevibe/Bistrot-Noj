@@ -1,0 +1,18 @@
+{
+    "format_version": 1,
+    "header": {
+        "description": "Did you wish for a more detailed description?",
+        "name": "Bitstorve Test v0.0 CBLT1",
+        "uuid": "5b553aa4-0228-4ba6-833f-6d726ec83c09",
+        "version": [1, 0, 3],
+        "min_engine_version": [1, 8, 0]
+    },
+    "modules": [
+        {
+            "description": "Bitstort Shader Test",
+            "type": "resources",
+            "uuid": "6c9a9820-cb19-42e1-8880-54cad4a65b71",
+            "version": [1, 0, 3]
+        }
+    ]
+}
