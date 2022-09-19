@@ -131,7 +131,6 @@ diffuse.rgb *= illumination;
 		*/
 		
 		diffuse.rgb = DrawSky(0.00, normalize((CubemapViewDirection + WaterNormal) / 2.00).y, LdotU);
-		diffuse.a = 1.00; 
 	}
 #endif
 
