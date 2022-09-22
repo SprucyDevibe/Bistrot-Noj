@@ -1,18 +1,21 @@
-vec3 Absorption(float depth, float light){
-    return exp(-SkylightColor / (depth + 0.001) + log(1.00 - light)) + light;
+vec3 Absorption(float Depth, float Light){
+    return exp(-SkylightColor / (Depth + 0.001) + log(1.00 - Light)) + Light;
 }
 
-vec3 SunBrightness(highp float NdotL, highp float LdotU){
-	return smoothstep(0.9985, 0.9986, NdotL) * 10.0 + 
-               smoothstep(0.00, 1.00, clamp(1.00 - pow((1.00 - NdotL) / 1.50, 0.10), 0.00, 1.00)) * 3.14 *
-			   Absorption(LdotU, LdotU * LdotU);
+vec3 SunBrightness(highp float Sunlight, highp float Sunheight){
+	return smoothstep(0.9985, 0.9986, Sunlight) * 10.0 + 
+               smoothstep(0.00, 1.00, clamp(1.00 - pow((1.00 - Sunlight) / 1.50, 0.10), 0.00, 1.00)) * 3.14 *
+			   Absorption(sqrt(Sunheight), Sunheight);
 }
 
-vec3 DrawSky(highp float NdotL, highp float NdotU, highp float LdotU){
-	vec3 SkyColor = pow(SkylightColor, sqrt(NdotU)  * vec3(1.00, 1.00, 1.00));
+vec3 DrawSky(highp float Sunlight, highp float Skylight, highp float Sunheight){
+    float Depth = sqrt(Skylight);
+    float Sunheight2 = Sunheight * Sunheight;
+    
+	vec3 SkyColor = pow(SkylightColor, vec3(Depth, Depth, Depth));
 	
-	vec3 Sky = SkyColor * Absorption(sqrt(NdotU), LdotU * LdotU);
-             Sky = (Sky + SunBrightness(NdotL, LdotU)) * Absorption(LdotU, LdotU * LdotU);
+	vec3 Sky = SkyColor * Absorption(Depth, Sunheight2);
+             Sky = (Sky + SunBrightness(Sunlight, Sunheight2)) * Absorption(Sunheight, Sunheight2);
 	
 	return Sky;
 }
