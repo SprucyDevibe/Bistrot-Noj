@@ -90,8 +90,8 @@ vec4 inColor = color;
 
 float SkyExposure = min(1.64 - smoothstep(0.00, 1.00, pow(1.00 - uv1.y, 0.20)), 1.00);
 
-vec3 WorldNormal = normalize(cross(dFdx(ChunkPosition), dFdy(ChunkPosition)));
-vec3 ViewDirection = normalize(WorldPosition);
+highp vec3 WorldNormal = normalize(cross(dFdx(ChunkPosition), dFdy(ChunkPosition)));
+highp vec3 ViewDirection = normalize(WorldPosition);
 
 vec3 SunPosition = vec3(1000.0, 1000.0, 0.00);
 
@@ -118,19 +118,21 @@ diffuse.rgb *= illumination;
 #ifdef BLEND
 	if(color.b-color.r>color.g-color.r){
 	    highp float time = TIME;
-	    highp vec3 CubemapViewDirection = normalize(CubemapPosition * vec3(1.00, -1.00, -1.00));
-	
 		vec2 coord_offset = vec2(2.6875,4.0625);
-		vec3 WaterNormal = normalize(texture2D(TEXTURE_0, fract(ChunkPosition.xz / 4.00) / 4.00 + coord_offset / 16.0).rgb * 2.00 - 1.00);
 		
-		/*
-		float Specular = max(dot(reflect(-SunDirection, WaterNormal), -normalize(WorldPosition)), 0.00);
-		Specular = min(pow(Specular, 1000.0) * 10.0, 1.00);
-		diffuse.a = 0.675 - max(dot(-normalize(WorldPosition), WaterNormal), 0.00) * 0.325 + Specular;
-		diffuse.rgb = mix(diffuse.rgb, SkylightColor * 0.25, 0.34);
-		*/
+		highp vec3 CubemapViewDirection = normalize(-CubemapPosition);
+		highp vec3 WaterNormal = normalize((texture2D(TEXTURE_0, fract((ChunkPosition.xz - time) / 16.0) / 4.00 + coord_offset / 16.0) * 0.50
+                                                    + texture2D(TEXTURE_0, fract((ChunkPosition.xz + time) / 8.00) / 4.00 + coord_offset / 16.0) * 0.50).xzy * 2.00 - 1.00);
+		highp vec3 ReflectedPosition = -reflect(CubemapViewDirection, WaterNormal);
 		
-		diffuse.rgb = DrawSky(0.00, normalize((CubemapViewDirection + WaterNormal) / 2.00).y, LdotU);
+        highp float Skylight = max(dot(ReflectedPosition, UpDirection), 0.00);
+		highp float Sunlight = max(dot(ReflectedPosition, SunDirection), 0.00);
+		highp float Specular = pow(max(dot(reflect(-normalize(SunDirection + CubemapViewDirection), WaterNormal), CubemapViewDirection), 0.00), 100.0);
+		
+		float NdotV = max(dot(WaterNormal, CubemapViewDirection), 0.00);
+		
+		diffuse.rgb = DrawSky(0.00, Skylight, LdotU) + Specular;
+		diffuse.a = 0.675 - 0.325 * NdotV + Specular * 0.77625;
 	}
 #endif
 
